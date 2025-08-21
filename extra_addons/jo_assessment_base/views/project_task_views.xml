@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="project_task_form_view_stage_started_inherit" model="ir.ui.view">
+        <field name="name">project.task.form.view.stage.started.inherit</field>
+        <field name="model">project.task</field>
+        <field name="inherit_id" ref="project.view_task_form2"/>
+        <field name="arch" type="xml">
+            <field name="tag_ids" position="after">
+                <field name="stage_started_on" force_save="1"/>
+                <field name="completed_on"/>
+            </field>
+        </field>
+    </record>
+
+</odoo>

@@ -1,0 +1,60 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: odoo
+      POSTGRES_USER: odoo
+      POSTGRES_PASSWORD: odoo
+    volumes:
+      - ./data-db/db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U odoo"]
+      interval: 5s
+      retries: 5
+    restart: always
+    networks:
+      - odoo-net
+
+  odoo:
+    build: .
+    depends_on:
+      - db
+    ports:
+      - "8069:8069"
+    volumes:
+      - ./extra_addons:/extra-addons
+      - ./config/odoo.conf:/opt/odoo/odoo.conf
+      - ./odoo-data:/opt/odoo/data
+      - ./odoo-log:/var/log/odoo
+    environment:
+      - HOST=db
+      - USER=odoo
+      - PASSWORD=odoo # Matches POSTGRES_PASSWORD below
+      - DB_NAME=odoo
+    command: odoo/odoo-bin -c odoo.conf -u jo_assessment_base,import_bom -d odoo --db_host=db --db_port=5432 --db_user=odoo --db_password=odoo
+    restart: always
+    networks:
+      - odoo-net
+
+  pgadmin:
+    image: dpage/pgadmin4:7
+    container_name: pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"   # access pgAdmin at http://localhost:5050
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+    restart: always
+    networks:
+      - odoo-net
+
+volumes:
+  odoo-data:
+  pgadmin-data:
+
+networks:
+  odoo-net:
