@@ -88,4 +88,5 @@
         name="import_bom.report_mo_traveler"
         file="import_bom.report_mo_traveler"
         print_report_name="'MO - %s' % (object.name)"/>
+
 </odoo>

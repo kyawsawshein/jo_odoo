@@ -4,9 +4,9 @@ services:
   db:
     image: postgres:15
     environment:
-      POSTGRES_DB: odoo
-      POSTGRES_USER: odoo
-      POSTGRES_PASSWORD: odoo
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     volumes:
       - ./data-db/db:/var/lib/postgresql/data
     healthcheck:
@@ -30,9 +30,8 @@ services:
       - ./odoo-log:/var/log/odoo
     environment:
       - HOST=db
-      - USER=odoo
-      - PASSWORD=odoo # Matches POSTGRES_PASSWORD below
-      - DB_NAME=odoo
+      - USER=${POSTGRES_USER}
+      - PASSWORD=${POSTGRES_PASSWORD} # Matches POSTGRES_PASSWORD below
     command: odoo/odoo-bin -c odoo.conf -u jo_assessment_base,jo_product_brand,import_bom -d odoo --db_host=db --db_port=5432 --db_user=odoo --db_password=odoo
     restart: always
     networks:
