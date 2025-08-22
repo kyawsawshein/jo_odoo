@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_mo_traveler">
+        <t t-call="web.external_layout">
+            <div class="page">
+                <h2>Manufacturing Order Traveler</h2>
+                <p>
+                    <strong>MO:</strong>
+                    <span t-esc="doc.name"/>
+                </p>
+                <p>
+                    <strong>Product:</strong>
+                    <span t-esc="doc.product_id.display_name"/>
+                </p>
+                <p>
+                    <strong>Quantity:</strong>
+                    <span t-esc="doc.product_qty"/>
+                    <span t-esc="doc.product_uom_id.name"/>
+                </p>
+                <p>
+                    <strong>Date:</strong>
+                    <span t-esc="doc.date_planned_start"/>
+                </p>
+
+                <h3>Components</h3>
+                <table class="table table-sm o_main_table">
+                    <thead>
+                        <tr>
+                            <th>Component</th>
+                            <th>Quantity</th>
+                            <th>UoM</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr t-foreach="doc.move_raw_ids" t-as="line">
+                            <td>
+                                <span t-esc="line.product_id.display_name"/>
+                            </td>
+                            <td>
+                                <span t-esc="line.product_uom_qty"/>
+                            </td>
+                            <td>
+                                <span t-esc="line.product_uom.name"/>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>Operations</h3>
+                <table class="table table-sm o_main_table">
+                    <thead>
+                        <tr>
+                            <th>Work Center</th>
+                            <th>Operation</th>
+                            <th>Duration</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr t-foreach="doc.workorder_ids" t-as="op">
+                            <td>
+                                <span t-esc="op.workcenter_id.name"/>
+                            </td>
+                            <td>
+                                <span t-esc="op.name"/>
+                            </td>
+                            <td>
+                                <span t-esc="op.duration_expected"/>
+ min</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>Safety Notes</h3>
+                <p t-esc="doc.note or 'N/A'"/>
+
+                <h3>Signatures</h3>
+                <p>____________________ Operator</p>
+                <p>____________________ Supervisor</p>
+            </div>
+        </t>
+    </template>
+
+    <!-- Report Action -->
+    <report id="action_report_mo_traveler" 
+        model="mrp.production"
+        string="MO Traveler"
+        report_type="qweb-pdf" 
+        name="import_bom.report_mo_traveler"
+        file="import_bom.report_mo_traveler"
+        print_report_name="'MO - %s' % (object.name)"/>
+</odoo>

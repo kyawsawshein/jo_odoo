@@ -8,10 +8,12 @@
     "author": "Zervi",
     "company": "Zervi",
     "website": "https://www.zerviglobal.com",
-    "depends": ["base", "stock", "mrp"],
+    "depends": ["mrp"],
     "data": {
         "security/ir.model.access.csv",
+        "report/mrp_report_views.xml",
         "views/bom_import_menu_view.xml",
+        "views/mrp_product_views.xml",
         "wizards/bom_import_view.xml",
         "wizards/success_message_view.xml",
     },

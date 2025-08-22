@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_report_mo_traveler" model="ir.actions.report">
+        <field name="name">MO Traveler</field>
+        <field name="model">mrp.production</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">import_bom.report_mo_traveler</field>
+        <field name="report_file">import_bom.report_mo_traveler</field>
+        <field name="print_report_name">'MO - %s' % (object.name)</field>
+    </record>
+
+    <record id="view_mrp_production_form_mo_traveler" model="ir.ui.view">
+        <field name="name">mrp.production.form.traveler</field>
+        <field name="model">mrp.production</field>
+        <field name="inherit_id" ref="mrp.mrp_production_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button name="%(import_bom.action_report_mo_traveler)d"
+                        string="Print Traveler"
+                        type="action"
+                        class="btn-primary"/>
+            </xpath>
+
+        </field>
+    </record>
+</odoo>
