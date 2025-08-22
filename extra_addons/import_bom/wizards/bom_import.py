@@ -8,7 +8,7 @@ from odoo import _, fields, models
 from odoo.exceptions import UserError
 from odoo.tools import ustr
 
-from ..datamodels.datamodel import BomData, MaterialProduct, BomType, DataCol
+from ..datamodels.datamodel import BomData, BomType, DataCol, MaterialProduct
 
 _logger = logging.getLogger(__name__)
 
@@ -80,9 +80,9 @@ class BomImport(models.TransientModel):
                                 bom_data.product_qty = line[DataCol.QUANTITY]
 
                             if rec.bom_type == "mtp":
-                                bom_data.type = BomType.MRP
+                                bom_data.type = BomType.MRP.value
                             else:
-                                bom_data.type = BomType.KIT
+                                bom_data.type = BomType.KIT.value
 
                             bom_bom = rec.env["mrp.bom"].create(bom_data.model_dump())
                             last_bom_id = bom_bom.id

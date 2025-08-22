@@ -8,7 +8,7 @@ class BomType(Enum):
     KIT = "phantom"
 
 
-class DataCol(Enum):
+class DataCol:
     REF = 0
     FINISHED_PROUCT = 1
     PRODUCT_VARIANT = 2
@@ -33,4 +33,3 @@ class BomData(BaseModel):
     product_uom_id: Optional[int] = 0
     product_qty: int = 1
     type: Optional[str] = ""
-    material: List[MaterialProduct] = None

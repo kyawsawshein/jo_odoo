@@ -10,4 +10,3 @@ class ResConfigSettings(models.TransientModel):
         string="Default Brand Prefix",
         config_parameter="jo.default_brand_prefix",
     )
-

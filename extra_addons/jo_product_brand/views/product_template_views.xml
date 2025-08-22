@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-  <odoo>
+<odoo>
     <record id="product_brand_form_view" model="ir.ui.view">
         <field name="name">product.brand.form</field>
         <field name="model">product.template</field>
@@ -28,10 +28,6 @@
         <field name="model">product.template</field>
         <field name="inherit_id" ref="product.product_template_search_view"/>
         <field name="arch" type="xml">
-            <!-- <field name="categ_id" position="after">
-                <field string="Product Brand" name="brand_id" filter_domain="[('brand_id', '=', True)]"/>
-            </field>
-            </field> -->
             <xpath expr="//search" position="inside">
                 <field name="brand_id"/>
                 <filter string="Brand" name="brand" domain="[]"/>

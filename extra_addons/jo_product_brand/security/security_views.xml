@@ -1,0 +1,11 @@
+<odoo>
+    <record id="group_assessment_manager" model="res.groups">
+        <field name="name">Assessment Manager</field>
+        <field name="category_id" ref="base.module_category_hidden"/>
+    </record>
+
+    <record id="group_assessment_user" model="res.groups">
+        <field name="name">Assessment User</field>
+        <field name="category_id" ref="base.module_category_hidden"/>
+    </record>
+</odoo>

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 {
-    "name": "Import Bill Of Materials",
+    "name": "Import BOM",
     "version": "0.1",
     "category": "Manufacturing",
     "summary": """Import Bill of materials using CSV.""",

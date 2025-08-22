@@ -6,25 +6,22 @@
 Long description of module's purpose
     """,
     "author": "Zervi",
-    "company": "Zervi",
-    "website": "https://www.zerviglobal.com",
-    "category": "Product",
+    "website": "https://www.zervi.com",
+    # Categories can be used to filter modules in modules listing
+    # Check https://github.com/odoo/odoo/blob/15.0/odoo/addons/base/data/ir_module_category_data.xml
+    # for the full list
+    "category": "Project",
     "version": "0.1",
     # any module necessary for this one to work correctly
-    "depends": ["stock", "project"],
+    "depends": ["base","project"],
     # always loaded
     "data": [
-        "security/ir.model.access.csv",
-        "views/product_brand_views.xml",
-        "views/product_template_views.xml",
+        "security/security_views.xml",
+        # "security/ir.model.access.csv",
         "views/project_task_views.xml",
-        "data/ir_cron_view.xml",
     ],
     # only loaded in demonstration mode
     "demo": [
         # 'demo/demo.xml',
     ],
-    "installable": True,
-    "auto_install": False,
-    "application": False,
 }

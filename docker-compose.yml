@@ -33,7 +33,7 @@ services:
       - USER=odoo
       - PASSWORD=odoo # Matches POSTGRES_PASSWORD below
       - DB_NAME=odoo
-    command: odoo/odoo-bin -c odoo.conf -u jo_assessment_base,import_bom -d odoo --db_host=db --db_port=5432 --db_user=odoo --db_password=odoo
+    command: odoo/odoo-bin -c odoo.conf -u jo_assessment_base,jo_product_brand,import_bom -d odoo --db_host=db --db_port=5432 --db_user=odoo --db_password=odoo
     restart: always
     networks:
       - odoo-net
