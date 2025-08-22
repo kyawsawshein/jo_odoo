@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <template id="report_mo_traveler">
+    <template id="report_mo_traveler_template">
         <t t-call="web.external_layout">
             <div class="page">
                 <h2>Manufacturing Order Traveler</h2>
@@ -80,13 +80,16 @@
         </t>
     </template>
 
-    <!-- Report Action -->
-    <report id="action_report_mo_traveler" 
-        model="mrp.production"
-        string="MO Traveler"
-        report_type="qweb-pdf" 
-        name="import_bom.report_mo_traveler"
-        file="import_bom.report_mo_traveler"
-        print_report_name="'MO - %s' % (object.name)"/>
+    <template id="report_mo_traveler">
+        <t t-set="data_report_landscape" t-value="True"/>
+        <t t-call="web.basic_layout">
+            <t t-foreach="docs" t-as="data">
+                <div class="page">
+                    <t t-call="import_bom.report_mo_traveler_template"/>
+                </div>
+                <p style="page-break-before:always;"> </p>
+            </t>
+        </t>
+    </template>
 
 </odoo>

@@ -12,6 +12,7 @@
     "data": {
         "security/ir.model.access.csv",
         "report/mrp_report_views.xml",
+        "report/mrp_report.xml",
         "views/bom_import_menu_view.xml",
         "views/mrp_product_views.xml",
         "wizards/bom_import_view.xml",
