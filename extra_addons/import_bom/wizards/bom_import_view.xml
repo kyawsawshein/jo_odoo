@@ -13,9 +13,17 @@
                     </group>
                     <field name="name" invisible="1"/>
                 </group>
+
                 <footer>
                     <button name="action_import_bom" string="Apply" type="object" class="btn-primary"/>
                     <button string="Cancel" class="btn-default" special="cancel"/>
+                    <div class="div_pos">
+                        <strong>Download Sample:</strong>
+                        <a role="button" href="import_bom/static/download/import_bom_csv.csv" class="btn-primary csv" download="">
+                            <i class="fa fa-download"/>
+                            CSV file
+                        </a>
+                    </div>
                 </footer>
             </form>
         </field>

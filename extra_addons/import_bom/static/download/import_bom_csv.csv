@@ -1,0 +1,13 @@
+Reference,Finished products,Product variant,Quantity,Unit of measure ,Material product,Material product quantity,Material product unit of mesure
+BOM-1,Finished Good A,FINGA-B,1,Units,CPNA,1,Units
+,,,,,CPNB,1,Units
+,,,,,CPNC,1,Units
+,,,,,CPND,1,Units
+,,,,,CPNE,1,Units
+BOM-2,Finished Good A,FINGA-W,1,Units,CPNA,1,Units
+,,,,,CPNB,1,Units
+,,,,,CPNC,1,Units
+,,,,,CPND,1,Units
+,,,,,CPNE,1,Units
+,,,,,,,
+,,,,,,,
