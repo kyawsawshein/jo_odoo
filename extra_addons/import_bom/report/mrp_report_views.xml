@@ -1,95 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <template id="report_mo_traveler_template">
-        <t t-call="web.external_layout">
-            <div class="page">
-                <h2>Manufacturing Order Traveler</h2>
-                <p>
-                    <strong>MO:</strong>
-                    <span t-esc="doc.name"/>
-                </p>
-                <p>
-                    <strong>Product:</strong>
-                    <span t-esc="doc.product_id.display_name"/>
-                </p>
-                <p>
-                    <strong>Quantity:</strong>
-                    <span t-esc="doc.product_qty"/>
-                    <span t-esc="doc.product_uom_id.name"/>
-                </p>
-                <p>
-                    <strong>Date:</strong>
-                    <span t-esc="doc.date_planned_start"/>
-                </p>
+        <t t-foreach="docs" t-as="doc">
+            <t t-call="web.html_container">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <h2>MO Traveler</h2>
+                        <p><strong>MO:</strong> <span t-esc="doc.name"/></p>
+                        <p><strong>Product:</strong> <span t-esc="doc.product_id.display_name"/></p>
 
-                <h3>Components</h3>
-                <table class="table table-sm o_main_table">
-                    <thead>
-                        <tr>
-                            <th>Component</th>
-                            <th>Quantity</th>
-                            <th>UoM</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr t-foreach="doc.move_raw_ids" t-as="line">
-                            <td>
-                                <span t-esc="line.product_id.display_name"/>
-                            </td>
-                            <td>
-                                <span t-esc="line.product_uom_qty"/>
-                            </td>
-                            <td>
-                                <span t-esc="line.product_uom.name"/>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                        <h3>Components</h3>
+                        <ul>
+                            <t t-foreach="doc.move_raw_ids" t-as="line">
+                                <li>
+                                    <span t-esc="line.product_id.display_name"/> — 
+                                    <span t-esc="line.product_uom_qty"/> 
+                                    <span t-esc="line.product_uom.name"/>
+                                </li>
+                            </t>
+                        </ul>
 
-                <h3>Operations</h3>
-                <table class="table table-sm o_main_table">
-                    <thead>
-                        <tr>
-                            <th>Work Center</th>
-                            <th>Operation</th>
-                            <th>Duration</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr t-foreach="doc.workorder_ids" t-as="op">
-                            <td>
-                                <span t-esc="op.workcenter_id.name"/>
-                            </td>
-                            <td>
-                                <span t-esc="op.name"/>
-                            </td>
-                            <td>
-                                <span t-esc="op.duration_expected"/>
- min</td>
-                        </tr>
-                    </tbody>
-                </table>
+                        <h3>Operations</h3>
+                        <ul>
+                            <!-- <t t-foreach="doc.routing_id.operation_ids" t-as="op">
+                                <li><span t-esc="op.name"/></li>
+                            </t> -->
+                        </ul>
 
-                <h3>Safety Notes</h3>
-                <p t-esc="doc.note or 'N/A'"/>
+                        <h3>Safety Notes</h3>
+                        <p>________________________________</p>
 
-                <h3>Signatures</h3>
-                <p>____________________ Operator</p>
-                <p>____________________ Supervisor</p>
-            </div>
-        </t>
-    </template>
-
-    <template id="report_mo_traveler">
-        <t t-set="data_report_landscape" t-value="True"/>
-        <t t-call="web.basic_layout">
-            <t t-foreach="docs" t-as="data">
-                <div class="page">
-                    <t t-call="import_bom.report_mo_traveler_template"/>
-                </div>
-                <p style="page-break-before:always;"> </p>
+                        <h3>Signature</h3>
+                        <p>________________________________</p>
+                    </div>
+                </t>
             </t>
         </t>
     </template>
-
 </odoo>

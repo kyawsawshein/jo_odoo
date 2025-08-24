@@ -41,7 +41,7 @@
         <field name="inherit_id" ref="product.product_template_form_view"/>
         <field name="arch" type="xml">
             <xpath expr="//group[@name='group_lots_and_weight']" position="inside">
-                <field name="low_stock_threshold"/>
+                <field name="low_stock_threshold" groups="jo_product_brand.group_brand_restricted_user"/>
             </xpath>
         </field>
     </record>

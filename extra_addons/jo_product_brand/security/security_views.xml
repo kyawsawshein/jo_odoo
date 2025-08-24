@@ -1,8 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-    <record id="brand_stock_move_rule" model="ir.rule">
-        <field name="name">Brand Restricted Stock Moves</field>
-        <field name="model_id" ref="stock.model_stock_move"/>
-        <!-- <field name="domain_force">['|', ('product_id.brand_id','in',user.brand_ids.ids), (1,'=',0)]</field> -->
-        <field name="groups" eval="[(4, ref('jo_assessment_base.group_assessment_manager'))]"/>
-    </record>
+    <data noupdate="0">
+        <!-- Security group for restricted users -->
+        <record id="group_brand_restricted_user" model="res.groups">
+            <field name="name">Brand Restricted User</field>
+            <field name="category_id" ref="base.module_category_inventory"/>
+        </record>
+
+        <!-- <record id="brand_stock_move_rule" model="ir.rule">
+            <field name="name">Brand Restricted Stock Moves</field>
+            <field name="model_id" ref="stock.model_stock_move"/>
+            <field name="domain_force">['|', ('product_id.brand_id','in',user.brand_ids.ids), (1,'=',0)]</field>
+            <field name="groups" eval="[(4, ref('jo_assessment_base.group_assessment_manager'))]"/>
+        </record> -->
+    </data>
+
 </odoo>
