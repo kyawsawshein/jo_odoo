@@ -10,7 +10,7 @@ services:
     volumes:
       - ./data-db/db:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U odoo"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
       interval: 5s
       retries: 5
     restart: always
@@ -20,7 +20,8 @@ services:
   odoo:
     build: .
     depends_on:
-      - db
+      db:
+        condition: service_healthy   # ✅ Wait for Postgres to be ready
     ports:
       - "8069:8069"
     volumes:
@@ -29,10 +30,14 @@ services:
       - ./odoo-data:/opt/odoo/data
       - ./odoo-log:/var/log/odoo
     environment:
-      - HOST=db
-      - USER=${POSTGRES_USER}
-      - PASSWORD=${POSTGRES_PASSWORD} # Matches POSTGRES_PASSWORD below
-    command: odoo/odoo-bin -c odoo.conf -u jo_assessment_base,jo_product_brand,import_bom -d odoo --db_host=db --db_port=5432 --db_user=odoo --db_password=odoo
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_USER=${POSTGRES_USER}
+      - DB_PASSWORD=${POSTGRES_PASSWORD}
+    command: >
+      python odoo/odoo-bin -c /etc/odoo/odoo.conf
+      -d odoo --db_host=db --db_port=5432 --db_user=odoo --db_password=odoo
+      -u jo_assessment_base,jo_product_brand,import_bom
     restart: always
     networks:
       - odoo-net

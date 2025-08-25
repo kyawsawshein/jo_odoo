@@ -1,52 +1,69 @@
-FROM ubuntu:22.04
+FROM python:3.10-slim
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y libssl-dev python3-dev \
-    git wget curl python3.10 python3.10-venv python3.10-dev \
-    build-essential libpq-dev libxml2-dev libxslt1-dev libjpeg-dev \
-    libldap2-dev libsasl2-dev libffi-dev node-less xz-utils \
-    && rm -rf /var/lib/apt/lists/*
+# Environment variables
+ENV LANG=C.UTF-8 \
+    LC_ALL=C.UTF-8 \
+    PYTHONUNBUFFERED=1 \
+    ODOO_USER=odoo \
+    ODOO_HOME=/opt/odoo \
+    ODOO_RC=/etc/odoo/odoo.conf
 
-# Create Odoo user
-RUN useradd -m -d /opt/odoo -U -r -s /bin/bash odoo
-WORKDIR /opt/odoo
-USER odoo
+# System dependencies for Odoo & Python packages
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    # Tools
+    bash git curl wget \
+    # Build tools
+    build-essential \
+    # Libraries required by Odoo addons
+    libpq-dev \
+    libxml2-dev libxslt1-dev \
+    libjpeg-dev zlib1g-dev \
+    libldap2-dev libsasl2-dev \
+    libffi-dev \
+    # JS runtime (needed for assets pipeline)
+    nodejs npm \
+ && rm -rf /var/lib/apt/lists/*
 
-# Create virtual environment
-RUN python3.10 -m venv odoo-venv
-ENV VIRTUAL_ENV=/opt/odoo/odoo-venv
-ENV PATH="$VIRTUAL_ENV/bin:$PATH"
+# Create odoo system user
+RUN useradd -m -d ${ODOO_HOME} -U -r -s /bin/bash ${ODOO_USER}
 
-# Upgrade pip and build tools
-RUN pip install --upgrade pip setuptools wheel cython
-RUN pip install cryptography pyopenssl cffi gevent==22.10.2 greenlet==2.0.2
+# Copy Odoo source code into container
+WORKDIR ${ODOO_HOME}
+ENV ODOO_VERSION=17.0
 
-# Clone Odoo 17 CE
-RUN git clone --depth 1 --branch 17.0 https://github.com/odoo/odoo.git odoo
+# Clone Odoo from GitHub
+RUN git clone --depth 1 --branch ${ODOO_VERSION} https://github.com/odoo/odoo.git odoo
 
-# get requirement.txt
-COPY requirements.txt /opt/odoo/
-COPY dev_requirements.txt /opt/odoo/
+# Install Python dependencies
+RUN pip install --upgrade pip wheel setuptools 
+    # pip install -r /opt/odoo/odoo/requirements.txt
 
-# Install all other Odoo requirements
-RUN grep -v -E "gevent|greenlet" odoo/requirements.txt > odoo/requirements_filtered.txt
-RUN pip install --no-cache-dir -r /opt/odoo/requirements.txt --no-deps
-RUN pip install --no-cache-dir -r /opt/odoo/dev_requirements.txt --no-deps
+# Create directories for custom addons, config, logs, data
+RUN mkdir /opt/odoo/extra-addons /var/log/odoo /var/lib/odoo && \
+    chown -R odoo:odoo /opt/odoo /var/log/odoo /var/lib/odoo
 
-# Install missing common packages
-RUN pip install six pytz babel lxml psycopg2-binary passlib certifi requests urllib3 idna charset-normalizer geoip2 zeep attrs requests-file cached-property openpyxl
-
-# Copy custom addons
-COPY ./extra_addons /opt/odoo/extra-addons
-
+# COPY . ${ODOO_HOME}
 # Copy config
-COPY ./config/odoo.conf /opt/odoo/odoo.conf
+COPY ./config/odoo.conf ${ODOO_RC}
 
-# Create session directory and give ownership to odoo user
-RUN mkdir -p /opt/odoo/data && chown -R odoo:odoo /opt/odoo/data
+# Copy requirements
+COPY requirements.txt ${ODOO_HOME}
+COPY dev_requirements.txt ${ODOO_HOME}
+
+# Copy addons
+COPY ./extra_addons ${ODOO_HOME}
+
+# Install Python dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r dev_requirements.txt
+
+# Ensure correct permissions
+RUN chown -R ${ODOO_USER}:${ODOO_USER} ${ODOO_HOME}
+
+USER ${ODOO_USER}
 
 # Expose Odoo port
 EXPOSE 8069
 
-# Start Odoo
-# CMD ["odoo/odoo-bin", "-c", "odoo.conf"]
+# Default command
+CMD ["python", "odoo/odoo-bin", "-c", "/etc/odoo/odoo.conf"]
