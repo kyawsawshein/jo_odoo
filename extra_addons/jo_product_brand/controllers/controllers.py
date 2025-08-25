@@ -1,24 +1,48 @@
 # # -*- coding: utf-8 -*-
-from typing import List
-from odoo import http
-from odoo.http import request, Response
 import json
+import logging
+from functools import wraps
+from typing import List, Optional
+
+from pydantic import BaseModel
+
+from odoo import http
+from odoo.exceptions import AccessDenied
+from odoo.http import Response, request
+
+_logger = logging.getLogger(__name__)
+
+BEARER = "Bearer "
+
+
+class ProductOnHand(BaseModel):
+    product: Optional[str] = ""
+    on_hand: Optional[float] = 0.0
+    available_to_promise: Optional[float] = 0.0
+
+
+class ResponseResult(BaseModel):
+    warehouse: Optional[str] = ""
+    results: list[ProductOnHand] = None
+
+
+def check_token(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        token = request.httprequest.headers.get("Authorization")
+        if token.startswith(BEARER):
+            token = token[len(BEARER) :]
+        expected = (
+            request.env["ir.config_parameter"].sudo().get_param("jo.stock_api_token")
+        )
+        if not token or token != expected:
+            raise AccessDenied(f"Invalid or missing token.")
+        return func(*args, **kwargs)
+
+    return wrapper
 
 
 class StockAPIController(http.Controller):
-
-    def check_token(self) -> bool:
-        token = request.httprequest.headers.get("Authorization")
-        expected_token = (
-            request.env["ir.config_parameter"].sudo().get_param("jo.stock_api_token")
-        )
-        if not token or token == expected_token:
-            return Response(
-                json.dumps({"error": "Unauthorized"}),
-                status=401,
-                content_type="application/json",
-            )
-        return True
 
     def get_all_location_ids(self, location) -> List:
         ids = location.ids
@@ -44,8 +68,8 @@ class StockAPIController(http.Controller):
     @http.route(
         "/api/v1/stock", type="http", auth="public", methods=["GET"], csrf=False
     )
+    @check_token
     def get_stock(self, **kwargs):
-        self.check_token()
         skus = kwargs.get("skus")
         warehouse_code = kwargs.get("warehouse")
         if not skus or not warehouse_code:
@@ -60,19 +84,27 @@ class StockAPIController(http.Controller):
         Product = request.env["product.product"].sudo()
         stock_quant = request.env["stock.quant"].sudo()
 
-        results = {}
+        results = []
         for sku in sku_list:
+            product_onhand = ProductOnHand()
             product = Product.search([("default_code", "=", sku)], limit=1)
             if not product:
-                results[sku] = {"on_hand": 0.0, "available_to_promise": 0}
+                # results[sku] = {"on_hand": 0.0, "available_to_promise": 0}
+                product_onhand.product = sku
+                results.append(product_onhand)
+                continue
             warehouse_quantity = stock_quant.search(
                 [
                     ("location_id", "in", warehouse_location_ids),
                     ("product_id", "=", product.id),
                 ]
             )
-            results[sku] = {
-                "on_hand": product.qty_available,
-                "available_to_promise": warehouse_quantity.quantity,
-            }
-        return json.dumps({"warehouse": warehouse_code, "results": results})
+            product_onhand.product = sku
+            product_onhand.on_hand = product.qty_available
+            product_onhand.available_to_promise = warehouse_quantity.quantity
+            results.append(product_onhand)
+            _logger.info(product_onhand)
+
+        return json.dumps(
+            ResponseResult(warehouse=warehouse_code, results=results).model_dump()
+        )

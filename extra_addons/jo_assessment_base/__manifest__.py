@@ -17,6 +17,7 @@ Long description of module's purpose
     # always loaded
     "data": [
         "security/security_views.xml",
+        "data/data.xml",
         # "security/ir.model.access.csv",
         "views/project_task_views.xml",
     ],

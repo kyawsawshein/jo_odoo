@@ -7,4 +7,5 @@
         <field name="name">Assessment Manager</field>
         <field name="implied_ids" eval="[(4, ref('jo_assessment_base.group_assessment_user'))]"/>
     </record>
+
 </odoo>

@@ -1,28 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
 
-    <!-- <record id="rule_product_template_brand_restricted" model="ir.rule">
-        <field name="name">Product Template: Brand Restriction</field>
-        <field name="model_id" ref="product.model_product_template"/>
-        <field name="domain_force">[("brand_id", "in", user.brand_ids.ids)]</field>
-        <field name="global" eval="False"/>
+    <record id="rule_product_variant_brand_restricted" model="ir.rule">
+        <field name="name">Product Brand Restriction</field>
+        <field name="model_id" ref="product.model_product_product"/>
         <field name="groups" eval="[(4, ref('jo_product_brand.group_brand_restricted_user'))]"/>
+        <field name="domain_force">
+            ['|', ('brand_id', 'in', user.brand_ids.ids), ('brand_id', '=', False)]
+        </field>
     </record>
-
-    <record id="rule_stock_move_brand_restricted" model="ir.rule">
-        <field name="name">Stock Move: Brand Restriction</field>
-        <field name="model_id" ref="stock.model_stock_move"/>
-        <field name="domain_force">[("product_id.brand_id", "in", user.brand_ids.ids)]</field>
-        <field name="global" eval="False"/>
-        <field name="groups" eval="[(4, ref('jo_product_brand.group_brand_restricted_user'))]"/>
-    </record> -->
 
     <record id="rule_product_brand_restricted" model="ir.rule">
         <field name="name">Product Brand Restriction</field>
         <field name="model_id" ref="product.model_product_template"/>
         <field name="groups" eval="[(4, ref('jo_product_brand.group_brand_restricted_user'))]"/>
         <field name="domain_force">
-            [('brand_id', 'in', user.brand_ids.ids)]
+            ['|', ('brand_id', 'in', user.brand_ids.ids), ('brand_id', '=', False)]
         </field>
     </record>
 
@@ -32,6 +25,33 @@
         <field name="groups" eval="[(4, ref('jo_product_brand.group_brand_restricted_user'))]"/>
         <field name="domain_force">
             ['|', ('product_id.brand_id', 'in', user.brand_ids.ids), ('product_id.brand_id', '=', False)]
+        </field>
+    </record>
+
+    <record id="rule_product_variant_brand_system" model="ir.rule">
+        <field name="name">Stock Move Brand Restriction</field>
+        <field name="model_id" ref="product.model_product_product"/>
+        <field name="groups" eval="[(4, ref('base.group_system'))]"/>
+        <field name="domain_force">
+            [(1, '=', 1)]
+        </field>
+    </record>
+
+    <record id="rule_product_brand_system" model="ir.rule">
+        <field name="name">Stock Move Brand Restriction</field>
+        <field name="model_id" ref="product.model_product_template"/>
+        <field name="groups" eval="[(4, ref('base.group_system'))]"/>
+        <field name="domain_force">
+            [(1, '=', 1)]
+        </field>
+    </record>
+
+    <record id="rule_stock_move_brand_system" model="ir.rule">
+        <field name="name">Stock Move Brand Restriction</field>
+        <field name="model_id" ref="stock.model_stock_move"/>
+        <field name="groups" eval="[(4, ref('base.group_system'))]"/>
+        <field name="domain_force">
+            [(1, '=', 1)]
         </field>
     </record>
 

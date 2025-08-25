@@ -7,7 +7,7 @@
         <field name="inherit_id" ref="product.product_template_form_view"/>
         <field name="arch" type="xml">
             <field name="categ_id" position="after">
-                <field name="brand_id"/>
+                <field name="brand_id" options="{'no_create': True, 'no_edit': True}"/>
             </field>
         </field>
     </record>
@@ -18,7 +18,7 @@
         <field name="inherit_id" ref="product.product_template_tree_view"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='product_tag_ids']" position="after">
-                <field name="brand_id" options="{'no_create': True}"/>
+                <field name="brand_id"/>
             </xpath>
         </field>
     </record>
@@ -41,7 +41,7 @@
         <field name="inherit_id" ref="product.product_template_form_view"/>
         <field name="arch" type="xml">
             <xpath expr="//group[@name='group_lots_and_weight']" position="inside">
-                <field name="low_stock_threshold" groups="jo_product_brand.group_brand_restricted_user"/>
+                <field name="low_stock_threshold"/>
             </xpath>
         </field>
     </record>

@@ -1,6 +1,12 @@
 from odoo import api, fields, models
 
 
+class Product(models.Model):
+    _inherit = "product.product"
+
+    brand_id = fields.Many2one("product.brand", string="Product Brand", index=True)
+
+
 class ProductTemplate(models.Model):
     _inherit = "product.template"
 

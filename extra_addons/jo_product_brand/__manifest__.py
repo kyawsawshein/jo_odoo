@@ -14,8 +14,9 @@ Long description of module's purpose
     "depends": ["stock"],
     # always loaded
     "data": [
-        "security/ir.model.access.csv",
         "security/security_views.xml",
+        "security/rules.xml",
+        "security/ir.model.access.csv",
         "views/res_user_views.xml",
         "views/product_brand_views.xml",
         "views/product_template_views.xml",
