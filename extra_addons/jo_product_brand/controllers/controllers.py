@@ -36,7 +36,7 @@ def check_token(func):
             request.env["ir.config_parameter"].sudo().get_param("jo.stock_api_token")
         )
         if not token or token != expected:
-            raise AccessDenied(f"Invalid or missing token.")
+            raise AccessDenied("Invalid or missing token.")
         return func(*args, **kwargs)
 
     return wrapper

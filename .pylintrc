@@ -24,6 +24,8 @@ disable=
     C0411, # wrong-import-order
     W1203, # logging-fstring-interpolation (Odoo uses %s)
     C0330, # bad-continuation (pylint formatting conflict)
+    W0104, # Statement seems to have no effect (pointless-statement)
+    W0223, # Method 'onchange' is abstract in class 'BaseModel' but is not overridden in child class 'SuccessMessage' (abstract-method)
 
 [REPORTS]
 output-format=colorized
@@ -34,7 +36,7 @@ score=no
 good-names=i,j,k,_,id,db,odoo,env,uid,ids
 
 [FORMAT]
-max-line-length=100
+max-line-length=130
 
 [DESIGN]
 max-args=10

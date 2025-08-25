@@ -38,7 +38,7 @@ class BomImport(models.TransientModel):
                 file_string = file.decode("utf-8")
                 file_string.split("\n")
             except Exception as err:
-                raise UserError(_("Please choose the correct file!", err))
+                raise UserError(_("Please choose the correct file!", err)) from err
             for rec in self:
                 file = str(base64.decodebytes(rec.file).decode("utf-8"))
                 reader = csv.reader(file.splitlines())
@@ -111,7 +111,7 @@ class BomImport(models.TransientModel):
                             "The CSV file you provided "
                             "does not match our required format" + ustr(e)
                         )
-                    )
+                    ) from e
 
     def success_message(self, rec_count):
         """function for displaying success message"""
