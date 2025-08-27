@@ -5,3 +5,5 @@ Features:
 - Product brand
 - Product API
 - Low stock alert
+- Retrict product brand with access right
+- Can be allown brand in user setting.
