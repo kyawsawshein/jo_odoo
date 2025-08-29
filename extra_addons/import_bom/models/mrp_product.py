@@ -72,5 +72,5 @@ class MrpBom(models.Model):
 
     product_id = fields.Many2one("product.product", "Product Variant", required=True)
     _sql_constraints = [
-        ("prodcut_uniq", "unique(product_id, company_id)", "Code already exists.")
+        ("prodcut_uniq", "unique(product_id, company_id)", "This product BOM is already exists.")
     ]
