@@ -1,6 +1,7 @@
 from typing import Optional
 from pydantic import BaseModel
 from enum import Enum
+from datetime import datetime
 
 
 class BomType(Enum):
@@ -33,3 +34,25 @@ class BomData(BaseModel):
     product_uom_id: Optional[int] = 0
     product_qty: int = 1
     type: Optional[str] = ""
+
+
+class RawMove(BaseModel):
+    product_id: int
+    product_uom: int
+    location_id: int
+    locaton_dest_id: int
+    product_qty: int
+    product_uom_qty: int
+    quantity: int
+    raw_material_prodcution_id: int
+    workorder_id: int
+
+
+class MRP(BaseModel):
+    product_id: int
+    product_qty: int
+    bom_id: int
+    product_uom_id: Optional[int] = None
+    date_start: Optional[datetime] = None
+    date_finished: Optional[datetime] = None
+    user_id: int = None
