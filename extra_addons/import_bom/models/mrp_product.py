@@ -50,6 +50,10 @@ class MrpProduction(models.Model):
         return mo_data
 
     def create_mo(self, product_id: int, quantity: int, ref: str):
+        default_picking_type_id = self._context.get("default_picking_type_id")
+        picking_type = self.env["stock.picking.type"].browse(default_picking_type_id)
+        location_src_id = picking_type.default_location_src_id.id
+        location_dest_id = picking_type.default_location_dest_id.id
         product_mo = self.compute_component_bom(
             product_id=product_id, quantity=quantity
         )
@@ -58,6 +62,8 @@ class MrpProduction(models.Model):
             mo.date_finished = fields.Date.today()
             mo.user_id = 2
             mo.origin = ref
+            mo.location_src_id = location_src_id
+            mo.location_dest_id = location_dest_id
             self.create(mo.model_dump())
 
 

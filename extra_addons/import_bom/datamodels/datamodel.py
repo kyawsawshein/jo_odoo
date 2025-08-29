@@ -57,3 +57,5 @@ class MRP(BaseModel):
     date_finished: Optional[datetime] = None
     user_id: Optional[int] = None
     origin: Optional[str] = None
+    location_src_id: Optional[int] = None
+    location_dest_id: Optional[int] = None

@@ -5,14 +5,13 @@
         <field name="model">stock.move</field>
         <field name="inherit_id" ref="stock.view_stock_move_operations"/>
         <field name="arch" type="xml">
-            <xpath expr="//group[2]" position="inside">
-                <group groups="jo_assessment_base.group_assessment_manager">
+            <xpath expr="//group[2]" position="inside" groups="mrp.group_mrp_manager">
+                    <field name="mo_picking_type_id"/>
                     <label for="request_order_mo"/>
                     <div class="o_row">
                         <field name="request_order_mo"/>
                         <button name="request_mo" string="Generate MO" type="object" class="btn btn-primary"/>
                     </div>
-                </group>
             </xpath>
         </field>
     </record>
