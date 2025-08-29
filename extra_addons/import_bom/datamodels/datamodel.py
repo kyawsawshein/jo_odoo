@@ -55,4 +55,5 @@ class MRP(BaseModel):
     product_uom_id: Optional[int] = None
     date_start: Optional[datetime] = None
     date_finished: Optional[datetime] = None
-    user_id: int = None
+    user_id: Optional[int] = None
+    origin: Optional[str] = None
