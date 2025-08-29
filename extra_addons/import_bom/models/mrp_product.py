@@ -47,7 +47,6 @@ class MrpProduction(models.Model):
             else:
                 mo_data[mrp.product_id] = mrp
 
-        _logger.info("mo data : %s", mo_data)
         return mo_data
 
     def create_mo(self, product_id: int = 140, quantity: int = 1, ref: str = "SO"):
