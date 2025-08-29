@@ -49,7 +49,7 @@ class MrpProduction(models.Model):
 
         return mo_data
 
-    def create_mo(self, product_id: int = 140, quantity: int = 1, ref: str = "SO"):
+    def create_mo(self, product_id: int, quantity: int, ref: str):
         product_mo = self.compute_component_bom(
             product_id=product_id, quantity=quantity
         )
