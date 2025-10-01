@@ -70,7 +70,7 @@ class MrpProduction(models.Model):
 class MrpBom(models.Model):
     _inherit = "mrp.bom"
 
-    product_id = fields.Many2one("product.product", "Product Variant", required=True)
+    product_id = fields.Many2one("product.product", "Product Variant", required=True, copy=False)
     _sql_constraints = [
-        ("prodcut_uniq", "unique(product_id, company_id)", "This product BOM is already exists.")
+        ("prodcut_uniq", "unique(product_id, company_id, type)", "This product BOM is already exists.")
     ]

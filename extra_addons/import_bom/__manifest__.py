@@ -11,10 +11,7 @@
     "depends": ["mrp"],
     "data": {
         "security/ir.model.access.csv",
-        "report/mrp_report_views.xml",
-        "report/mrp_report.xml",
         "views/bom_import_menu_view.xml",
-        "views/mrp_product_views.xml",
         "views/stock_move_views.xml",
         "wizards/bom_import_view.xml",
         "wizards/success_message_view.xml",
