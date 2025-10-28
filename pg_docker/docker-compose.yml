@@ -2,8 +2,7 @@ version: "3.9"
 
 services:
   pgadmin:
-    image: dpage/pgadmin4:7
-    container_name: pgadmin
+    image: dpage/pgadmin4:latest
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@admin.com
       PGADMIN_DEFAULT_PASSWORD: admin
@@ -13,11 +12,11 @@ services:
       - pgadmin-data:/var/lib/pgadmin
     restart: always
     networks:
-      - jo_odoo_odoo-net
+      - odoo19_odoo19-net
 
 volumes:
   pgadmin-data:
 
 networks:
-  jo_odoo_odoo-net:
+  odoo19_odoo19-net:
     external: true

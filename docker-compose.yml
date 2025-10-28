@@ -2,7 +2,7 @@ version: "3.9"
 
 services:
   db:
-    image: postgres:15
+    image: postgres:17
     environment:
       - POSTGRES_DB=${POSTGRES_DB}
       - POSTGRES_USER=${POSTGRES_USER}
@@ -15,36 +15,34 @@ services:
       retries: 5
     restart: always
     networks:
-      - odoo-net
+      - odoo19-net
 
-  odoo:
+  odoo19:
     build: .
     depends_on:
       db:
         condition: service_healthy   # ✅ Wait for Postgres to be ready
     ports:
-      - "8069:8069"
+      - "8090:8090"
     volumes:
       - ./extra_addons:/extra-addons
       - ./config/odoo.conf:/opt/odoo/odoo.conf
       - ./odoo-data:/opt/odoo/data
       - ./odoo-log:/var/log/odoo
     environment:
-      - DB_HOST=db
+      - DB_HOST=db_19
       - DB_PORT=5432
       - DB_USER=${POSTGRES_USER}
       - DB_PASSWORD=${POSTGRES_PASSWORD}
     command: >
-      python odoo/odoo-bin -c /etc/odoo/odoo.conf
-      -d odoo --db_host=db --db_port=5432 --db_user=odoo --db_password=odoo
-      -u jo_assessment_base,jo_product_brand,import_bom
+      python odoo/odoo-bin -c /etc/odoo/odoo.conf -i base -d odoo
     restart: always
     networks:
-      - odoo-net
+      - odoo19-net
 
 volumes:
   odoo-data:
 
 networks:
-  odoo-net:
+  odoo19-net:
     driver: bridge
