@@ -25,7 +25,7 @@ services:
     ports:
       - "8090:8090"
     volumes:
-      - ./extra_addons:/extra-addons
+      - ./extra_addons:/extra_addons
       - ./config/odoo.conf:/opt/odoo/odoo.conf
       - ./odoo-data:/opt/odoo/data
       - ./odoo-log:/var/log/odoo
@@ -35,7 +35,8 @@ services:
       - DB_USER=${POSTGRES_USER}
       - DB_PASSWORD=${POSTGRES_PASSWORD}
     command: >
-      python odoo/odoo-bin -c /etc/odoo/odoo.conf -i base -d odoo
+      python odoo/odoo-bin -c /etc/odoo/odoo.conf -d odoo
+      -i api_module
     restart: always
     networks:
       - odoo19-net

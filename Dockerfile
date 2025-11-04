@@ -66,14 +66,14 @@ COPY ./config/odoo.conf ${ODOO_RC}
 
 # Copy requirements
 COPY requirements.txt ${ODOO_HOME}
-# COPY dev_requirements.txt ${ODOO_HOME}
+COPY dev_requirements.txt ${ODOO_HOME}
 
 # Copy addons
-COPY ./extra_addons ${ODOO_HOME}
+# COPY ./extra_addons ${ODOO_HOME}
 
 # Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
-# RUN pip install --no-cache-dir -r dev_requirements.txt
+RUN pip install --no-cache-dir -r dev_requirements.txt
 
 # Ensure correct permissions
 RUN chown -R ${ODOO_USER}:${ODOO_USER} ${ODOO_HOME}
