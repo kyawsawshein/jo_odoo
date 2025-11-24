@@ -57,7 +57,7 @@ RUN pip install --upgrade pip wheel setuptools
 # pip install -r /opt/odoo/odoo/requirements.txt
 
 # Create directories for custom addons, config, logs, data
-RUN mkdir /opt/odoo/extra-addons /var/log/odoo /var/lib/odoo && \
+RUN mkdir /opt/odoo/extra_addons /opt/odoo/vandor_addons /var/log/odoo /var/lib/odoo && \
     chown -R odoo:odoo /opt/odoo /var/log/odoo /var/lib/odoo
 
 # COPY . ${ODOO_HOME}
@@ -68,8 +68,8 @@ COPY ./config/odoo.conf ${ODOO_RC}
 COPY requirements.txt ${ODOO_HOME}
 COPY dev_requirements.txt ${ODOO_HOME}
 
-# Copy addons
-# COPY ./extra_addons ${ODOO_HOME}
+# Copy vandor addons
+# COPY vendor_addons ${ODOO_HOME}/vendor_addons
 
 # Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt

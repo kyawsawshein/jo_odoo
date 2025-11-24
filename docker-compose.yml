@@ -25,18 +25,20 @@ services:
     ports:
       - "8090:8090"
     volumes:
-      - ./extra_addons:/extra_addons
-      - ./config/odoo.conf:/opt/odoo/odoo.conf
+      - ./extra_addons:/opt/odoo/extra_addons
+      - ./vendor_addons:/opt/odoo/vendor_addons
+      - ./config/odoo.conf:/etc/odoo/odoo.conf
       - ./odoo-data:/opt/odoo/data
       - ./odoo-log:/var/log/odoo
     environment:
-      - DB_HOST=db_19
+      - DB_HOST=db
       - DB_PORT=5432
       - DB_USER=${POSTGRES_USER}
       - DB_PASSWORD=${POSTGRES_PASSWORD}
     command: >
       python odoo/odoo-bin -c /etc/odoo/odoo.conf -d odoo
       -i api_module
+      -u zervi_account_asset
     restart: always
     networks:
       - odoo19-net

@@ -13,10 +13,13 @@ services:
     restart: always
     networks:
       - odoo19_odoo19-net
+      - jo_odoo_odoo-net
 
 volumes:
   pgadmin-data:
 
 networks:
   odoo19_odoo19-net:
+    external: true
+  jo_odoo_odoo-net:
     external: true
