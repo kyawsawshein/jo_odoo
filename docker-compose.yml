@@ -25,7 +25,7 @@ services:
     ports:
       - "8090:8090"
     volumes:
-      - ./extra_addons:/opt/odoo/extra_addons
+      - ./odoo_extra_addons:/opt/odoo/odoo_extra_addons
       - ./vendor_addons:/opt/odoo/vendor_addons
       - ./config/odoo.conf:/etc/odoo/odoo.conf
       - ./odoo-data:/opt/odoo/data
@@ -37,8 +37,7 @@ services:
       - DB_PASSWORD=${POSTGRES_PASSWORD}
     command: >
       python odoo/odoo-bin -c /etc/odoo/odoo.conf -d odoo
-      -i api_module
-      -u zervi_account_asset
+      -u zb_mrp_group
     restart: always
     networks:
       - odoo19-net
