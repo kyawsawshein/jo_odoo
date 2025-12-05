@@ -32,22 +32,33 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     xfonts-75dpi \
     libjpeg62-turbo \
     libxext6 \
+    libc6 \
+    libfreetype6 \
+    # libjpeg-turbo8 \
+    libpng16-16 \
+    # libssl1.1 \
+    libstdc++6 \
+    libx11-6 \
+    libxcb1 \
+    libxext6 \
+    libxrender1 \
+    zlib1g \
     libx11-6 && \
     rm -rf /var/lib/apt/lists/*
 
 # Install a patched version of wkhtmltopdf (version 0.12.6.1) that is compatible with Odoo 19 (which is based on Debian Bookworm).
 # NOTE: The official Debian version (0.12.6) may not support headers/footers.
 # This downloads a build compatible with Bookworm/Debian 12.
-RUN wget https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6.1-3/wkhtmltox_0.12.6.1-3.bookworm_amd64.deb && \
-    apt-get install -y --allow-downgrades ./wkhtmltox_0.12.6.1-3.bookworm_amd64.deb && \
-    rm wkhtmltox_0.12.6.1-3.bookworm_amd64.deb
+# RUN wget https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/0.12.5/wkhtmltox_0.12.5-1.bionic_amd64.deb && \
+#     apt-get install -y --allow-downgrades ./wkhtmltox_0.12.5-1.bionic_amd64.deb && \
+#     rm wkhtmltox_0.12.5-1.bionic_amd64.deb
 
 # Create odoo system user
 RUN useradd -m -d ${ODOO_HOME} -U -r -s /bin/bash ${ODOO_USER}
 
 # Copy Odoo source code into container
 WORKDIR ${ODOO_HOME}
-ENV ODOO_VERSION=19.0
+ENV ODOO_VERSION=18.0
 
 # Clone Odoo from GitHub
 RUN git clone --depth 1 --branch ${ODOO_VERSION} https://github.com/odoo/odoo.git odoo
@@ -66,14 +77,13 @@ COPY ./config/odoo.conf ${ODOO_RC}
 
 # Copy requirements
 COPY requirements.txt ${ODOO_HOME}
-COPY dev_requirements.txt ${ODOO_HOME}
 
 # Copy vandor addons
 # COPY vendor_addons ${ODOO_HOME}/vendor_addons
 
 # Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
-RUN pip install --no-cache-dir -r dev_requirements.txt
+# RUN pip install --no-cache-dir -r dev_requirements.txt
 
 # Ensure correct permissions
 RUN chown -R ${ODOO_USER}:${ODOO_USER} ${ODOO_HOME}
