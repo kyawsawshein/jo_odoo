@@ -3,10 +3,16 @@ db_host = db
 db_post = 5432
 db_user = odoo
 db_password = admin
-addons_path = /opt/odoo/odoo/addons, /extra_addons,
+addons_path = /opt/odoo/odoo/addons, /opt/odoo/odoo_extra_addons, /extra_addons,
     /opt/odoo/vendor_addons/account-invoicing,
     /opt/odoo/vendor_addons/account-reconcile,
+    /opt/odoo/vendor_addons/reporting-engine,
+    /opt/odoo/vendor_addons/account-financial-tools,
+    /opt/odoo/vendor_addons/queue,
+    /opt/odoo/vendor_addons/odooapps,
     /vendor_addons/query_deluxe,
+    /vendor_addons/oca-ocb-mrp,
+    /vendor_addons/manufacture,
 data_dir = /opt/odoo/data
 admin_passwd = admin
 logfile = /var/log/odoo/odoo.log

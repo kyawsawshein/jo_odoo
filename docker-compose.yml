@@ -3,6 +3,7 @@ version: "3.9"
 services:
   db:
     image: postgres:17
+    container_name: postgres17
     environment:
       - POSTGRES_DB=${POSTGRES_DB}
       - POSTGRES_USER=${POSTGRES_USER}
@@ -19,6 +20,7 @@ services:
 
   odoo19:
     build: .
+    container_name: odoo19
     depends_on:
       db:
         condition: service_healthy   # ✅ Wait for Postgres to be ready
@@ -26,6 +28,7 @@ services:
       - "8090:8090"
     volumes:
       - ./odoo_extra_addons:/opt/odoo/odoo_extra_addons
+      - ./extra_addons:/opt/odoo/extra_addons
       - ./vendor_addons:/opt/odoo/vendor_addons
       - ./config/odoo.conf:/etc/odoo/odoo.conf
       - ./odoo-data:/opt/odoo/data
@@ -36,8 +39,9 @@ services:
       - DB_USER=${POSTGRES_USER}
       - DB_PASSWORD=${POSTGRES_PASSWORD}
     command: >
-      python odoo/odoo-bin -c /etc/odoo/odoo.conf -d odoo
-      -u zb_mrp_group
+      python odoo/odoo-bin -c /etc/odoo/odoo.conf
+      -u zervi_account_asset,manufacture_process_costing,bi_lot_and_serial_expiry_report_track,uom_conversion,cr_product_lot_serial
+      -d odoo
     restart: always
     networks:
       - odoo19-net
