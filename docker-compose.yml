@@ -40,7 +40,7 @@ services:
       - DB_PASSWORD=${POSTGRES_PASSWORD}
     command: >
       python odoo/odoo-bin -c /etc/odoo/odoo.conf
-      -u zervi_account_asset,manufacture_process_costing,bi_lot_and_serial_expiry_report_track,uom_conversion,cr_product_lot_serial
+      -u account_reconcile_model_oca,account_reconcile_oca,zervi_account_asset,manufacture_process_costing,bi_lot_and_serial_expiry_report_track,uom_conversion,cr_product_lot_serial
       -d odoo
     restart: always
     networks:

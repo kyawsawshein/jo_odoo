@@ -15,7 +15,9 @@ env/
 .venv/
 
 # Exclude folder
+extra_addons
 odoo_extra_addons
+odooapps
 vendor_addons
 
 # Odoo
