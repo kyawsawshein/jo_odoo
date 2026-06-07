@@ -1,0 +1,107 @@
+# Odoo 17 → 19 Migration — Prompt Pack
+
+A reusable set of prompts for planning and executing a migration of Accounting, Inventory, Purchases, Sales, and Manufacturing, with correct handling of Contacts, Stock, Accounting, and data integrity.
+
+---
+
+## 0. Read this first (assumptions & ground rules)
+
+- **Sequential only.** Odoo upgrades version-by-version: 17 → 18 → 19. You cannot skip 18. The schema scripts for 19 assume the 18 schema is already in place.
+- **Two valid strategies — decide early:**
+  - **A. Full database upgrade** (carry all historical transactions through the upgrade scripts). Best when you need full history (journal entries, stock moves, valuation layers).
+  - **B. Fresh Odoo 19 + master-data import** (install clean v19, import Contacts / Products / BoMs / open balances / open stock only). Best when the v17 DB is messy or heavily customised.
+- **Never touch production.** Do all upgrade work on a staging copy. Use your **Staging 2** instance (the manual-refresh one) as the migration rehearsal sandbox so the daily auto-sync on Staging 1 doesn't overwrite your work.
+- **Back up DB + filestore together.** A DB without its filestore loses attachments, logos, and document binaries.
+- **Custom-module freeze.** Freeze the custom codebase during the migration window so you don't have to re-test against a moving target.
+
+> Replace bracketed placeholders like `[DB_NAME]`, `[CLOUDPEPPER_INSTANCE]`, `[EDITION]` before using a prompt.
+
+---
+
+## Phase 1 — Assessment & scoping
+
+**1.1 Inventory what exists**
+> I'm migrating an Odoo 17 [Community/Enterprise] database from Odoo 17 to Odoo 19. Help me build a complete pre-migration inventory. Give me the SQL queries and/or shell commands to list: (a) every installed module split into core vs. third-party (OCA) vs. our custom modules, (b) database size and the size of the 10 largest tables, (c) filestore size, (d) row counts for res_partner, account_move, account_move_line, stock_move, stock_move_line, stock_quant, stock_valuation_layer, purchase_order, sale_order, and mrp_production. Then give me a one-page risk summary template to fill in.
+
+**1.2 Map customisations to migration effort**
+> Here is the list of our custom and OCA modules: [PASTE LIST]. For each one, classify it as: (1) drop — superseded by native Odoo 19 features, (2) port — must be rewritten for v19, or (3) keep-as-is — likely compatible. For the "port" ones, list the most common breaking changes between Odoo 17 and 19 I should expect (deprecated view tags, renamed fields, ORM API changes, removed methods). Ask me about any module where you need more detail.
+
+**1.3 Decide strategy A vs B**
+> Given this profile — [DB size], [number of custom modules], [years of transaction history we must keep], [Community/Enterprise] — recommend full-database-upgrade vs. fresh-install-plus-master-data-import. Lay out the trade-offs for our specific case in a short table, then recommend one and explain why.
+
+---
+
+## Phase 2 — Environment & backup
+
+**2.1 Provision the rehearsal environment**
+> I host on Cloudpepper with one production and two staging instances. Walk me through standing up an isolated Odoo 19 rehearsal environment from a copy of production, using Staging 2 (manual refresh) so the daily auto-sync doesn't clobber it. Include: pulling a fresh prod backup (DB + filestore), restoring it to the rehearsal instance, disabling all outbound mail/cron/scheduled actions on the copy, and neutralising any production webhooks before I start.
+
+**2.2 Backup & rollback plan**
+> Write me a backup-and-rollback runbook for the production cutover: exactly what to back up (DB dump + filestore + custom addons + config), where to store it, how to verify the backup is restorable, the go/no-go checklist, and the step-by-step rollback procedure if the cutover fails mid-way. Format as a checklist I can print.
+
+---
+
+## Phase 3 — Custom code & integration compatibility
+
+**3.1 Run the staged upgrade**
+> Give me the exact sequence to upgrade the database from 17 → 18 → 19 on the rehearsal instance, including the Odoo upgrade request flow ([Enterprise upgrade platform / OpenUpgrade for Community]), and how to run `upgrade_code` to auto-convert deprecated `tree` view tags to `list` and other v18 deprecations in our custom modules. After each version step, give me the command to load all modules and surface errors: `odoo-bin -d [DB] --update=all --stop-after-init` and how to read the log for failures.
+
+**3.2 FastAPI / XML-RPC integration layer**
+> We have a Python FastAPI integration layer that talks to Odoo over XML-RPC (with some PostgreSQL/SQLAlchemy reporting reads). Help me audit it for the v17→v19 jump. Specifically: list the model and field names my integration most likely depends on (res.partner, account.move/line, stock.move/quant/valuation.layer, purchase.order, sale.order, mrp.production) and which of those changed between 17 and 19. Then give me a test plan: a script that calls every XML-RPC method our FastAPI layer uses against the v19 rehearsal DB and reports any that break. Flag any raw SQL in the reporting layer that references columns likely renamed or dropped.
+
+**3.3 Custom module port checklist**
+> For this custom module [PASTE __manifest__.py + key models], produce a v19 port checklist: manifest version bump, view tag changes (tree→list), deprecated ORM methods, changed field attributes, `@api` decorator changes, security/access-rights file format, and asset bundle changes. Then rewrite the parts that are clearly broken and explain each change.
+
+---
+
+## Phase 4 — Per-module migration & data validation
+
+For **each** module, the pattern is the same: confirm config carried over, then reconcile counts and totals between v17 (source) and v19 (target). Run these after the upgrade on the rehearsal DB.
+
+**4.1 Contacts — `res.partner`**
+> Build a validation report comparing Contacts between the v17 source and v19 upgraded DB. Compare: total partner count, companies vs. individuals, count with VAT/tax ID set, count with banking info, and the parent/child company hierarchy integrity (no orphaned children). Give me SQL for both DBs and a diff template. Also list res.partner fields that changed or were deprecated between 17 and 19 that could silently drop data.
+
+**4.2 Accounting — `account.*`**
+> Validate the accounting migration. Reconcile between source and target: chart of accounts count, journal count by type, total debit and total credit per fiscal year (they must match exactly), number of posted vs. draft moves, reconciled-line counts, open AR and AP balances, and tax/fiscal-position config. Give me SQL that produces a trial-balance-style comparison so I can prove the books tie out before and after. Flag any account.move state or amount field that changed in v18/v19.
+
+**4.3 Inventory / Stock — `stock.*`**
+> Validate the stock migration. Reconcile: on-hand quantity per product per location (stock_quant), total stock_move and stock_move_line counts, valuation totals from stock_valuation_layer per product category, warehouse/location/route config, and reservation integrity. Give me SQL comparing on-hand and valuation between source and target, and a list of stock model/field changes between 17 and 19 to watch for. Highlight anything that would throw inventory valuation out of balance with the accounting layer.
+
+**4.4 Purchases — `purchase.*`**
+> Validate purchasing. Reconcile: total purchase orders by state (draft/sent/purchase/done/cancel), open POs not fully received, open vendor bills linkage (PO → bill), and any custom approval fields. Give me a comparison report and flag purchase.order / purchase.order.line field changes in v18/v19.
+
+**4.5 Sales — `sale.*`**
+> Validate sales. Reconcile: total sales orders by state, open SOs not fully delivered/invoiced, SO → delivery → invoice chain integrity, and pricelist/discount config. Give me the comparison SQL and flag sale.order / sale.order.line changes in v18/v19.
+
+**4.6 Manufacturing — `mrp.*`**
+> Validate manufacturing. Reconcile: BoM count and BoM-line integrity (no BoMs pointing at archived products/components), routings/work-center config, manufacturing orders by state, work-order linkage, and component consumption vs. finished-goods stock moves. Note: routings and work-order behaviour changed across recent versions — list what changed for 17→19 and how it affects existing open MOs. Give me the comparison SQL.
+
+---
+
+## Phase 5 — Reconciliation & data integrity
+
+**5.1 Cross-module tie-outs**
+> Give me the cross-module integrity checks that matter most after an Odoo upgrade: (a) inventory valuation total vs. the stock valuation accounts in the general ledger, (b) AR/AP sub-ledger totals vs. their control accounts, (c) every confirmed SO/PO has its expected stock moves and invoices/bills. For each, give me SQL and the acceptable tolerance (most should be zero variance).
+
+**5.2 Orphan & referential checks**
+> Write SQL to find orphaned or dangling references introduced by the migration: move lines without a parent move, stock moves pointing at missing products/locations, partners referenced by transactions but missing from res_partner, and any NULLs in columns that should be required in v19. Output a single report with a row per check and a pass/fail.
+
+---
+
+## Phase 6 — Cutover & sign-off
+
+**6.1 Cutover runbook**
+> Produce the production cutover runbook for migrating from Odoo 17 to Odoo 19 on Cloudpepper. Include: maintenance-window comms template, final prod backup, freeze writes, run the 17→18→19 upgrade, redeploy ported custom modules, point the FastAPI integration layer at v19 and smoke-test it, run the Phase 4/5 validation reports against production, the go/no-go gate, and how long each step should take. Add the rollback trigger conditions.
+
+**6.2 Post-go-live smoke test**
+> Give me a 20-minute post-go-live smoke test: log in, open each migrated module's settings, then run one live end-to-end flow per area — create+confirm a Sales Order through to invoice and payment, create+confirm a Purchase Order through to vendor bill, run a Manufacturing Order with component consumption, check resulting stock moves and inventory valuation, and confirm the FastAPI layer can read and write each model. List the exact clicks/API calls and the expected result for each.
+
+**6.3 Sign-off sheet**
+> Generate a migration sign-off sheet: every validation check from Phases 4–5 as a line item with pass/fail and the reconciled figures (source vs. target), space for the data-owner sign-off per module, and an outstanding-issues log.
+
+---
+
+### Quick tips for using these prompts
+- Feed prompts one phase at a time and paste real output (logs, SQL results, manifests) back in — the answers get far sharper with concrete data.
+- Keep the source (v17) and target (v19) numbers side by side; "the books tie out" is the single best proof the migration worked.
+- Treat the FastAPI/XML-RPC layer as a first-class migration item, not an afterthought — field renames between versions are the most common silent breakage for external integrations.
